@@ -5,100 +5,92 @@ from flask import Flask, request, render_template, jsonify, send_file
 from flask_cors import CORS
 import networkx as nx
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
-import io
 import matplotlib.pyplot as plt
 import random
-
-app = Flask(__name__)
-CORS(app)  # Enable CORS for all routes
-
-
 import time
 
-def draw_graph(graph, node_colors=None):
-    plt.clf()
-    G = nx.Graph(graph)
-    pos = nx.spring_layout(G)
-    if node_colors is not None:
-        colors = [node_colors.get(node, 0) for node in G.nodes()]
-        nx.draw(G, pos, node_color=colors, with_labels=True)
-    else:
-        nx.draw(G, pos, with_labels=True)
-    timestamp = int(time.time())
-    plt.savefig(f'static/my_plot_{timestamp}.png')
-    return timestamp
+# Initialize Flask app and enable CORS
+app = Flask(__name__)
+CORS(app)
 
-
-def random_graph_generator(n, k):
-    value = random.random()
-    p = value
-
-    subsets = [[] for _ in range(k)]
-    for i in range(n):
-        subsets[i % k].append(i)
+def generate_random_graph(num_vertices, chromatic_number):
+    """Generate a random graph."""
+    p = random.random()
+    subsets = [[] for _ in range(chromatic_number)]
+    for i in range(num_vertices):
+        subsets[i % chromatic_number].append(i)
 
     edges = set()
-    for i in range(n):
-        for j in range(i + 1, n):
-            if i in subsets[j % k] or j in subsets[i % k]:
+    for i in range(num_vertices):
+        for j in range(i + 1, num_vertices):
+            if i in subsets[j % chromatic_number] or j in subsets[i % chromatic_number]:
                 continue
             elif random.random() < p:
                 edges.add((i, j))
 
-    graph = {i: [] for i in range(n)}
+    graph = {i: [] for i in range(num_vertices)}
     for u, v in edges:
         graph[u].append(v)
         graph[v].append(u)
     return graph
 
-def bipartite_is(graph):
-    i_set = set()
-    i_set2 = set()
-    visited = set()
+def find_bipartite_sets(graph):
+    """Find bipartite independent sets."""
+    set1, set2, visited = set(), set(), set()
+    start_vertex = len(graph) - 1
+    set1.add(start_vertex)
+    visited.add(start_vertex)
+    queue = [start_vertex]
 
-    st_v = len(graph) - 1
-    i_set.add(st_v)
-    visited.add(st_v)
-
-    qu = [st_v]
-    while qu:
-        ver = qu.pop(0)
-        for neighbor in graph[ver]:
+    while queue:
+        vertex = queue.pop(0)
+        for neighbor in graph[vertex]:
             if neighbor not in visited:
-                if ver in i_set:
-                    i_set2.add(neighbor)
+                if vertex in set1:
+                    set2.add(neighbor)
                 else:
-                    i_set.add(neighbor)
+                    set1.add(neighbor)
                 visited.add(neighbor)
-                qu.append(neighbor)
-    return list(i_set), list(i_set2)
+                queue.append(neighbor)
+    return list(set1), list(set2)
 
-def CBIP(G):
-    find_minimum_integer = lambda lst: next(i for i in range(1, len(lst) + 2) if i not in set(lst))
-    G = nx.Graph(G)
-    n = len(G.nodes())
-    if n < 1:
-        return []
+def color_with_cbip(graph):
+    """Color the graph using CBIP algorithm."""
+    def find_minimum_integer(used_colors):
+        for i in range(1, len(used_colors) + 2):
+            if i not in used_colors:
+                return i
+
+    G = nx.Graph(graph)
     color_list = [1]
-    for i in range(1, n):
+    for i in range(1, len(G.nodes)):
         other_part_colors = []
-        other_part = bipartite_is(G.subgraph(range(i + 1)))[1]
+        other_part = find_bipartite_sets(G.subgraph(range(i + 1)))[1]
         for j in other_part:
             other_part_colors.append(color_list[j])
         color = find_minimum_integer(other_part_colors)
         color_list.append(color)
     return color_list
 
-def firstfit(graph):
+def color_with_first_fit(graph):
+    """Color the graph using First Fit algorithm."""
     colors = {}
     for vertex in graph:
-        used_colors = set(colors.get(neighbor) for neighbor in graph[vertex] if neighbor in colors)
+        used_colors = {colors[neighbor] for neighbor in graph[vertex] if neighbor in colors}
         available_colors = set(range(len(graph))) - used_colors
-        if available_colors:
-            colors[vertex] = min(available_colors)
-        else:
-            colors[vertex] = len(graph)
+        colors[vertex] = min(available_colors) if available_colors else len(graph)
     return colors
+
+def draw_graph(graph, node_colors=None):
+    """Draw the graph and save it as an image."""
+    plt.clf()
+    G = nx.Graph(graph)
+    pos = nx.spring_layout(G)
+    colors = [node_colors.get(node, 0) for node in G.nodes()] if node_colors else None
+    nx.draw(G, pos, node_color=colors, with_labels=True)
+    timestamp = int(time.time())
+    plt.savefig(f'static/graph_{timestamp}.png')
+    return timestamp
 
 @app.route('/', methods=['GET'])
 def index():
@@ -111,33 +103,24 @@ def graph_coloring():
     num_vertices = int(data['numberOfVertices'])
     num_instances = int(data['numberOfInstances'])
     coloring_method = data['coloringMethod']
-    y = 0
+    total_ratio = 0
 
-    result = f"Graph coloring using {coloring_method} with k={chromatic_number}, v={num_vertices}, n={num_instances}"
-
-    g1 = []
-    c = []
-    for i in range(num_instances):
-        grap = random_graph_generator(num_vertices, chromatic_number)
-        g1 = grap
+    for _ in range(num_instances):
+        graph = generate_random_graph(num_vertices, chromatic_number)
         if coloring_method == 'cbip':
-            x = CBIP(grap)
-            unique_values = set(x)
+            colors = color_with_cbip(graph)
+            unique_colors = set(colors)
         else:
-            x = firstfit(grap)
-            unique_values = set(x.values())
-        c = x
-        y += float((len(unique_values) / chromatic_number))
+            colors = color_with_first_fit(graph)
+            unique_colors = set(colors.values())
+        total_ratio += len(unique_colors) / chromatic_number
 
-    Av = y / num_instances
+    average_ratio = total_ratio / num_instances
 
-    if coloring_method == 'cbip':
-        c = {index: num for index, num in enumerate(c)}
-    colormap = c
-    node_colors = {node: colormap.get(node, 0) for node in g1.keys()}
+    node_colors = {index: color for index, color in enumerate(colors)}
+    timestamp = draw_graph(graph, node_colors)
 
-    timestamp = draw_graph(g1, node_colors)
-    return jsonify({'average': Av, 'image': f'my_plot_{timestamp}.png', 'method': coloring_method})
+    return jsonify({'average': average_ratio, 'image': f'graph_{timestamp}.png', 'method': coloring_method})
 
 @app.route('/plot')
 def plot():
