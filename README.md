@@ -23,13 +23,13 @@ To run the project locally, follow these steps:
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/amanpreetbatra/Algo-Project.git
+   git clone https://github.com/vikramsinghbrahm/Online-Graph-Coloring-Analysis.git
    ```
 
 2. Navigate to the project directory:
 
    ```bash
-   cd Algo-Project
+   cd Online-Graph-Coloring-Analysis
    ```
 
 3. Install the required packages using pip:
