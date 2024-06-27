@@ -1,113 +1,232 @@
-# Comparative Analysis of Online Graph Coloring Problem
+
+
+# Graph Coloring Analysis Tool
+
+Welcome to the Graph Coloring Analysis Tool! This tool provides a comprehensive environment for analyzing and experimenting with various graph coloring algorithms. Graph coloring is a fundamental topic in graph theory and computer science, where the objective is to assign colors to the vertices of a graph such that no two adjacent vertices share the same color. This problem has significant applications in scheduling, register allocation in compilers, and network coloring.
 
 ## Table of Contents
 
-- [Problem Description](#problem-description)
+- [Introduction](#introduction)
+- [Features](#features)
 - [Installation](#installation)
 - [Usage](#usage)
-- [Implementation](#implementation)
-- [Algorithms](#algorithms)
-- [Graph Generation](#graph-generation)
-- [Results](#results)
-- [Conclusion](#conclusion)
-- [References](#references)
+- [API Endpoints](#api-endpoints)
+- [Technologies Used](#technologies-used)
+- [Contributing](#contributing)
 
-## Problem Description
+## Introduction
 
-This project focuses on the Online Graph Coloring Problem, a well-known problem in graph theory. The objective is to assign colors to vertices as they arrive online while minimizing the number of colors used and ensuring adjacent vertices have different colors. Two algorithms, First-Fit and CBIP, are studied for coloring online graphs.
+Graph coloring is a critical concept in computer science and discrete mathematics. It has numerous applications in real-world scenarios, such as:
+
+- **Scheduling**: Assigning time slots or resources without conflicts.
+- **Register Allocation**: Efficiently assigning variables to CPU registers in compiler design.
+- **Network Coloring**: Frequency assignment in wireless networks to avoid interference.
+
+This tool allows users to:
+
+- Generate random graphs.
+- Apply different graph coloring algorithms.
+- Visualize the results.
+- Analyze the performance of the algorithms.
+
+## Features
+
+### Chromatic Number Calculation
+
+Determine the minimum number of colors required to color a graph without two adjacent vertices having the same color.
+
+### Random Graph Generation
+
+Create random graphs with a specified number of vertices and edges to test different algorithms.
+
+### Algorithm Selection
+
+Choose from multiple graph coloring algorithms, including:
+
+- **CBIP (Coloring by Iterative Partitioning)**: An efficient algorithm for coloring bipartite graphs.
+- **First Fit Algorithm**: A simple heuristic for graph coloring.
+
+### Visualization
+
+Visualize the colored graph to understand how the algorithm performs on different types of graphs.
+
+### Performance Metrics
+
+Analyze the performance of different algorithms in terms of the number of colors used and the time taken for computation.
 
 ## Installation
 
-To run the project locally, follow these steps:
+### Prerequisites
 
-1. Clone the repository:
+- Python 3.x
+- Node.js and npm
+- Git
 
-   ```bash
-   git clone https://github.com/vikramsinghbrahm/Online-Graph-Coloring-Analysis.git
+### Backend Setup
+
+1. **Clone the Repository**
+
+   ```sh
+   git clone https://github.com/yourusername/graph-coloring-analysis.git
+   cd graph-coloring-analysis/backend
    ```
 
-2. Navigate to the project directory:
+2. **Create a Virtual Environment**
 
-   ```bash
-   cd Online-Graph-Coloring-Analysis
+   ```sh
+   python -m venv venv
    ```
 
-3. Install the required packages using pip:
+3. **Activate the Virtual Environment**
 
-   ```bash
+   - On Windows:
+
+     ```sh
+     venv\Scripts\activate
+     ```
+
+   - On macOS/Linux:
+
+     ```sh
+     source venv/bin/activate
+     ```
+
+4. **Install Dependencies**
+
+   ```sh
    pip install -r requirements.txt
    ```
 
-4. Run the Flask application:
+5. **Run the Backend Server**
 
-   ```bash
+   ```sh
    python app.py
    ```
 
-5. Open your web browser and navigate to `http://127.0.0.1:5000/` to access the application.
+### Frontend Setup
+
+1. **Navigate to the Frontend Directory**
+
+   ```sh
+   cd ../frontend
+   ```
+
+2. **Install Dependencies**
+
+   ```sh
+   npm install
+   ```
+
+3. **Run the Frontend Development Server**
+
+   ```sh
+   npm run serve
+   ```
 
 ## Usage
 
-1. Open your web browser and navigate to `http://127.0.0.1:5000/`.
-2. Enter the desired parameters in the UI:
-   - Chromatic number (k)
-   - Number of vertices (n)
-   - Number of instances (N)
-   - Choose an algorithm: "First Fit" or "CBIP"
-3. Click the "Check" button to generate graphs and analyze results.
-4. View the generated graph, coloring method used, and average competitive ratio.
+1. **Start the Backend Server**
 
-## Implementation
-      
+   ```sh
+   cd backend
+   python app.py
+   ```
 
-### Backend (Python Flask)
+2. **Start the Frontend Development Server**
 
-- **Graph Generation:** Implemented a function to generate k-colorable online graphs based on user input using the Flask framework.
-- **Coloring Algorithm:** Implemented First-Fit and CBIP algorithms as separate functions to color online graphs.
-- **Routing:** Set up Flask routes to handle API requests for graph generation and running the coloring algorithms.
+   ```sh
+   cd frontend
+   npm run serve
+   ```
 
-### Frontend (HTML, CSS, JavaScript)
+3. **Access the Application**
 
-- **User Interface:** Designed an interactive UI with input options for chromatic number (k), number of vertices (n), and instances (N).
-- **Visualization:** Utilized D3.js to visualize the online graph generation process, algorithm results, competitive ratio, and statistics.
-- **API Calls:** Implemented JavaScript functions to make asynchronous calls to Flask APIs for processing and displaying results.
+   Open your web browser and navigate to \`http://localhost:8080`.
 
-## Algorithms
+## API Endpoints
 
-### Greedy Algorithms
+### GET 
 
-Greedy algorithms make locally optimal choices at each step with the hope of reaching a global optimum solution. Two algorithms are studied:
+Renders the main page.
 
-1. **First-Fit Graph Coloring Algorithm:** Assigns the first available color not used by neighboring vertices.
-2. **CBIP Greedy Graph Coloring Algorithm:** Assigns colors using bipartite partitioning.
+### POST /api/graph-coloring
 
-## Graph Generation
+Generates and colors a random graph based on the provided parameters.
 
-Graphs are generated to be k-colorable, allowing efficient testing of k-coloring algorithms. The vertices are partitioned into subsets, and edges are added with a probability p to create a random graph.
+**Request Body:**
 
-## Results
+```json
+{
+  "chromaticNumber": 3,
+  "numberOfVertices": 10,
+  "numberOfInstances": 1,
+  "coloringMethod": "cbip"
+}
+```
 
-### First-Fit Greedy Graph Coloring Algorithm
+**Response:**
 
-- **N=100:** Comparisons of competitive ratios for various k and n values are presented.
-- **N=1000:** Competitive ratios for k=2,3,4 are compared, demonstrating the algorithm's behavior.
+```json
+{
+  "average": 1.0,
+  "image": "graph_1633062802.png",
+  "method": "cbip"
+}
+```
 
-### CBIP Greedy Graph Coloring Algorithm
+### GET /plot
 
-- **N=100:** Competitive ratios for k=2 are analyzed across varying n values.
-- **Time Complexity:** CBIP's exponential time complexity for higher k values is discussed.
+Returns the generated plot image.
 
-## Conclusion
+## Technologies Used
 
-This study empirically explores the average competitive ratios of First-Fit and CBIP algorithms. Insights are drawn on their performance, limitations, and computational practicality.
+- **Backend:**
+  - Flask
+  - NetworkX
+  - Matplotlib
+  - Flask-CORS
 
+- **Frontend:**
+  - Vue.js
+  - Axios
+  - Vuelidate
 
-## References
+## Contributing
 
-A list of references is provided for the algorithms and concepts used in the project.
+Contributions are welcome! Please follow these steps to contribute:
 
-[1] Li, Y., Narayan, V.V., Pankratov, D. (2022). Online Coloring and a New Type of Adversary for Online Graph Problems. Algorithmica 84(4), 1232-1251.
+1. **Fork the Repository**
 
-[2] Erdős, P., R’enyi, A. (1959). On random graphs I. Publicationes Mathematicae, 6, 290-297.
+   Click the "Fork" button at the top right of the repository page.
 
-[3] Kierstead, H., Smith, D., Trotter, W. (2015). First-fit coloring on interval graphs has performance ratio at least 5. European Journal of Combinatorics, 51.
+2. **Clone Your Fork**
+
+   ```sh
+   git clone https://github.com/vikramsinghbrahm/Online-Graph-Coloring-Analysis.git
+   cd Online-Graph-Coloring-Analysis
+
+   ```
+
+3. **Create a Branch**
+
+   ```sh
+   git checkout -b feature/your-feature-name
+   ```
+
+4. **Make Your Changes**
+
+5. **Commit Your Changes**
+
+   ```sh
+   git commit -m "Add your commit message here"
+   ```
+
+6. **Push to Your Fork**
+
+   ```sh
+   git push origin feature/your-feature-name
+   ```
+
+7. **Create a Pull Request**
+
+   Open a pull request from your fork's branch to the main repository's branch.
