@@ -193,40 +193,6 @@ Returns the generated plot image.
 
 ## Contributing
 
-Contributions are welcome! Please follow these steps to contribute:
-
-1. **Fork the Repository**
-
-   Click the "Fork" button at the top right of the repository page.
-
-2. **Clone Your Fork**
-
-   ```sh
-   git clone https://github.com/vikramsinghbrahm/Online-Graph-Coloring-Analysis.git
-   cd Online-Graph-Coloring-Analysis
-
-   ```
-
-3. **Create a Branch**
-
-   ```sh
-   git checkout -b feature/your-feature-name
-   ```
-
-4. **Make Your Changes**
-
-5. **Commit Your Changes**
-
-   ```sh
-   git commit -m "Add your commit message here"
-   ```
-
-6. **Push to Your Fork**
-
-   ```sh
-   git push origin feature/your-feature-name
-   ```
-
-7. **Create a Pull Request**
+Contributions are welcome! 
 
    Open a pull request from your fork's branch to the main repository's branch.
