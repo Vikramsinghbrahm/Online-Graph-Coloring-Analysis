@@ -195,4 +195,4 @@ Returns the generated plot image.
 
 Contributions are welcome! 
 
-   Open a pull request from your fork's branch to the main repository's branch.
+
