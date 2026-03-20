@@ -21,21 +21,6 @@ That makes the project useful for interview discussion because it naturally touc
 - frontend/backend contracts
 - repository hygiene and testing
 
-## Engineering Assessment
-
-This refactor turns the repo into a cleaner engineering artifact:
-
-- Refactored the backend into focused modules under `backend/graph_coloring/`.
-- Added input validation and clearer error messages for the API.
-- Preserved backward compatibility with the original `/api/graph-coloring` route while introducing a cleaner `/api/experiments` endpoint.
-- Added reproducible experiments through optional fixed seeds.
-- Added benchmark automation through `backend/benchmark.py`.
-- Added backend tests for graph generation, coloring validity, and API behavior.
-- Reworked the Vue frontend into a more polished experiment workbench with better presentation and guardrails.
-- Removed tracked build artifacts, unused scaffold files, and the committed backend virtual environment.
-- Added root-level ignore rules and a frontend environment example.
-- Updated frontend dependencies so `npm audit --omit=dev` reports zero production vulnerabilities as of March 20, 2026.
-
 ## Architecture
 
 ### Backend
@@ -225,17 +210,6 @@ Response shape:
 |-- requirements-dev.txt
 `-- README.md
 ```
-
-## Interview Talking Points
-
-This project is now strong enough to discuss in a FAANG-style interview because it shows:
-
-- algorithmic reasoning with measurable trade-offs
-- clean separation of concerns in the backend
-- API validation tied to domain correctness
-- reproducible experiment design through seeded runs
-- a frontend that consumes structured results instead of ad-hoc responses
-- testing, build verification, and repository cleanup discipline
 
 ## Conclusion
 
