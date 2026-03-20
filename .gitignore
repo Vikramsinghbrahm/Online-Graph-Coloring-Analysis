@@ -1,0 +1,28 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+backend/venv/
+
+# Generated analysis assets
+backend/static/generated/*.png
+!backend/static/generated/.gitkeep
+backend/static/graph_*.png
+backend/static/my_plot*.png
+backend/static/graph_plot.png
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+
+# Local environment files
+.DS_Store
+.env
+.env.local
+.env.*.local
+
+# IDEs
+.idea/
+.vscode/

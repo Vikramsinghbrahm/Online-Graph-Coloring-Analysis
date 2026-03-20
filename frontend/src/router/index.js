@@ -5,12 +5,12 @@ import GraphColoring from "../components/GraphColoring.vue";
 const routes = [
   {
     path: "/",
-    name: "LandingPage",
+    name: "landing",
     component: LandingPage,
   },
   {
     path: "/graph-coloring",
-    name: "GraphColoring",
+    name: "graph-coloring",
     component: GraphColoring,
   },
 ];

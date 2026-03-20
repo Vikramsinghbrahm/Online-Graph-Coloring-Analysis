@@ -1,198 +1,244 @@
+# Online Graph Coloring Analysis
 
+An interview-ready full-stack project for exploring online graph coloring strategies on randomly generated k-partite graphs.
 
-# Graph Coloring Analysis Tool
+The project combines:
 
-Welcome to the Graph Coloring Analysis Tool! This tool provides a comprehensive environment for analyzing and experimenting with various graph coloring algorithms. Graph coloring is a fundamental topic in graph theory and computer science, where the objective is to assign colors to the vertices of a graph such that no two adjacent vertices share the same color. This problem has significant applications in scheduling, register allocation in compilers, and network coloring.
+- a Flask API for experiment orchestration
+- a Vue dashboard for running and visualizing experiments
+- reproducible benchmark scenarios
+- automated tests and validation
 
-## Table of Contents
+## Why This Project Matters
 
-- [Introduction](#introduction)
-- [Features](#features)
-- [Installation](#installation)
-- [Usage](#usage)
-- [API Endpoints](#api-endpoints)
-- [Technologies Used](#technologies-used)
-- [Contributing](#contributing)
+Graph coloring is a classic algorithmic problem with practical links to scheduling, compiler register allocation, and resource assignment. This repository focuses on the online version of the problem, where vertices are colored as they are revealed rather than with full future knowledge.
 
-## Introduction
+That makes the project useful for interview discussion because it naturally touches:
 
-Graph coloring is a critical concept in computer science and discrete mathematics. It has numerous applications in real-world scenarios, such as:
+- algorithm design and trade-offs
+- API design and input validation
+- reproducibility in simulation-heavy systems
+- frontend/backend contracts
+- repository hygiene and testing
 
-- **Scheduling**: Assigning time slots or resources without conflicts.
-- **Register Allocation**: Efficiently assigning variables to CPU registers in compiler design.
-- **Network Coloring**: Frequency assignment in wireless networks to avoid interference.
+## Engineering Assessment
 
-This tool allows users to:
+This refactor turns the repo into a cleaner engineering artifact:
 
-- Generate random graphs.
-- Apply different graph coloring algorithms.
-- Visualize the results.
-- Analyze the performance of the algorithms.
+- Refactored the backend into focused modules under `backend/graph_coloring/`.
+- Added input validation and clearer error messages for the API.
+- Preserved backward compatibility with the original `/api/graph-coloring` route while introducing a cleaner `/api/experiments` endpoint.
+- Added reproducible experiments through optional fixed seeds.
+- Added benchmark automation through `backend/benchmark.py`.
+- Added backend tests for graph generation, coloring validity, and API behavior.
+- Reworked the Vue frontend into a more polished experiment workbench with better presentation and guardrails.
+- Removed tracked build artifacts, unused scaffold files, and the committed backend virtual environment.
+- Added root-level ignore rules and a frontend environment example.
+- Updated frontend dependencies so `npm audit --omit=dev` reports zero production vulnerabilities as of March 20, 2026.
 
-## Features
+## Architecture
 
-### Chromatic Number Calculation
+### Backend
 
-Determine the minimum number of colors required to color a graph without two adjacent vertices having the same color.
+`backend/graph_coloring/`
 
-### Random Graph Generation
+- `api.py`: Flask app factory and API routes
+- `validation.py`: request parsing and business rules
+- `generator.py`: k-partite graph generation
+- `algorithms.py`: First Fit and CBIP implementations
+- `experiment.py`: experiment orchestration and metrics
+- `visualization.py`: graph rendering
+- `models.py`: typed experiment result objects
 
-Create random graphs with a specified number of vertices and edges to test different algorithms.
+### Frontend
 
-### Algorithm Selection
+`frontend/src/`
 
-Choose from multiple graph coloring algorithms, including:
+- `components/LandingPage.vue`: project overview and interview framing
+- `components/GraphColoring.vue`: experiment workbench and result presentation
+- `config.js`: API base URL configuration
+- `assets/styles.css`: application styling system
 
-- **CBIP (Coloring by Iterative Partitioning)**: An efficient algorithm for coloring bipartite graphs.
-- **First Fit Algorithm**: A simple heuristic for graph coloring.
+## Results Snapshot
 
-### Visualization
+Results below were generated on March 20, 2026 with:
 
-Visualize the colored graph to understand how the algorithm performs on different types of graphs.
+- fixed seed `42`
+- `20` experiment instances per scenario
+- the built-in benchmark script: `python backend/benchmark.py`
 
-### Performance Metrics
+| Scenario                      | Avg colors | Avg ratio | Avg runtime (ms) | Best ratio | Worst ratio |
+| ----------------------------- | ---------: | --------: | ---------------: | ---------: | ----------: |
+| CBIP on bipartite graphs      |        3.1 |      1.55 |           1.2904 |        1.0 |         2.0 |
+| First Fit on bipartite graphs |       3.35 |     1.675 |           0.0611 |        1.0 |         3.0 |
+| First Fit on 3-partite graphs |       5.25 |      1.75 |           0.0293 |     1.3333 |         2.0 |
+| First Fit on 4-partite graphs |        6.7 |     1.675 |           0.0355 |        1.5 |         2.0 |
 
-Analyze the performance of different algorithms in terms of the number of colors used and the time taken for computation.
+### Findings From The Results
 
-## Installation
+- CBIP used fewer colors than First Fit on the same bipartite benchmark.
+- First Fit was materially faster, which is expected from its simpler greedy rule.
+- As the target chromatic number increased, First Fit stayed fast but consistently overshot the target coloring number.
+- The project now makes those trade-offs visible and reproducible instead of anecdotal.
 
-### Prerequisites
+## Verification
 
-- Python 3.x
-- Node.js and npm
-- Git
+The following checks were run successfully during cleanup:
 
-### Backend Setup
+- `python -m pytest backend/tests -q`
+- `npm run lint`
+- `npm run build`
+- `python backend/benchmark.py`
 
-1. **Clone the Repository**
+Backend test result:
 
-   ```sh
-   git clone https://github.com/yourusername/graph-coloring-analysis.git
-   cd graph-coloring-analysis/backend
-   ```
+- `7 passed`
 
-2. **Create a Virtual Environment**
+## Local Setup
 
-   ```sh
-   python -m venv venv
-   ```
+### 1. Create a Python environment
 
-3. **Activate the Virtual Environment**
+```powershell
+python -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -r requirements-dev.txt
+```
 
-   - On Windows:
+### 2. Install frontend dependencies
 
-     ```sh
-     venv\Scripts\activate
-     ```
+```powershell
+cd frontend
+npm install
+cd ..
+```
 
-   - On macOS/Linux:
+### 3. Start the backend
 
-     ```sh
-     source venv/bin/activate
-     ```
+```powershell
+.\.venv\Scripts\python.exe backend/app.py
+```
 
-4. **Install Dependencies**
+The API will start on `http://localhost:5000`.
 
-   ```sh
-   pip install -r requirements.txt
-   ```
+### 4. Start the frontend
 
-5. **Run the Backend Server**
+Create a local environment file if you want to override the default backend URL:
 
-   ```sh
-   python app.py
-   ```
+```powershell
+Copy-Item frontend\.env.example frontend\.env.local
+```
 
-### Frontend Setup
+Then run:
 
-1. **Navigate to the Frontend Directory**
+```powershell
+cd frontend
+npm run serve
+cd ..
+```
 
-   ```sh
-   cd ../frontend
-   ```
+The frontend development server runs on `http://localhost:8080`.
 
-2. **Install Dependencies**
+## API
 
-   ```sh
-   npm install
-   ```
+### Health Check
 
-3. **Run the Frontend Development Server**
+`GET /api/health`
 
-   ```sh
-   npm run serve
-   ```
+Response:
 
-## Usage
+```json
+{
+  "status": "ok"
+}
+```
 
-1. **Start the Backend Server**
+### Run An Experiment
 
-   ```sh
-   cd backend
-   python app.py
-   ```
+`POST /api/experiments`
 
-2. **Start the Frontend Development Server**
-
-   ```sh
-   cd frontend
-   npm run serve
-   ```
-
-3. **Access the Application**
-
-   Open your web browser and navigate to \`http://localhost:8080`.
-
-## API Endpoints
-
-### GET 
-
-Renders the main page.
-
-### POST /api/graph-coloring
-
-Generates and colors a random graph based on the provided parameters.
-
-**Request Body:**
+Request body:
 
 ```json
 {
   "chromaticNumber": 3,
-  "numberOfVertices": 10,
-  "numberOfInstances": 1,
-  "coloringMethod": "cbip"
+  "numberOfVertices": 24,
+  "numberOfInstances": 8,
+  "coloringMethod": "first_fit",
+  "edgeProbability": 0.35,
+  "seed": 42
 }
 ```
 
-**Response:**
+Response shape:
 
 ```json
 {
-  "average": 1.0,
-  "image": "graph_1633062802.png",
-  "method": "cbip"
+  "request": {
+    "chromatic_number": 3,
+    "number_of_vertices": 24,
+    "number_of_instances": 8,
+    "coloring_method": "first_fit",
+    "edge_probability": 0.35,
+    "seed": 42
+  },
+  "summary": {
+    "average_colors_used": 5.0,
+    "average_ratio": 1.6667,
+    "average_runtime_ms": 0.03,
+    "best_ratio": 1.3333,
+    "worst_ratio": 2.0,
+    "valid_colorings": true
+  },
+  "instances": [
+    {
+      "instance": 1,
+      "seed": 42,
+      "colors_used": 5,
+      "ratio": 1.6667,
+      "runtime_ms": 0.03
+    }
+  ],
+  "sample_graph": {
+    "image": "graph_xxxxx.png",
+    "imageUrl": "/static/generated/graph_xxxxx.png",
+    "seed": 42,
+    "vertexCount": 24,
+    "edgeCount": 76
+  }
 }
 ```
 
-### GET /plot
+## Project Structure
 
-Returns the generated plot image.
+```text
+.
+|-- backend/
+|   |-- app.py
+|   |-- benchmark.py
+|   |-- graph_coloring/
+|   |-- static/generated/
+|   `-- tests/
+|-- frontend/
+|   |-- public/
+|   |-- src/
+|   `-- .env.example
+|-- requirements.txt
+|-- requirements-dev.txt
+`-- README.md
+```
 
-## Technologies Used
+## Interview Talking Points
 
-- **Backend:**
-  - Flask
-  - NetworkX
-  - Matplotlib
-  - Flask-CORS
+This project is now strong enough to discuss in a FAANG-style interview because it shows:
 
-- **Frontend:**
-  - Vue.js
-  - Axios
-  - Vuelidate
+- algorithmic reasoning with measurable trade-offs
+- clean separation of concerns in the backend
+- API validation tied to domain correctness
+- reproducible experiment design through seeded runs
+- a frontend that consumes structured results instead of ad-hoc responses
+- testing, build verification, and repository cleanup discipline
 
-## Contributing
+## Conclusion
 
-Contributions are welcome! 
+The project now reads like an engineering project instead of a classroom prototype. It is suitable for portfolio use and for technical discussion around algorithms, system design decisions, validation, benchmarking, and software quality.
 
-
+The best next improvement would be migrating the frontend from the older Vue CLI stack to Vite. The production dependency surface is clean, but a Vite migration would modernize the developer tooling and remove the remaining aging build-chain baggage from the interview story.

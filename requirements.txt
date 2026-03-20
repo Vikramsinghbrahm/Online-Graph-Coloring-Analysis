@@ -1,4 +1,4 @@
-Flask==2.1.1
-Flask-Cors==3.0.10
-networkx==2.6.3
-matplotlib==3.4.3
+Flask>=3.0,<4.0
+Flask-Cors>=4.0,<6.0
+networkx>=3.2,<4.0
+matplotlib>=3.8,<4.0
