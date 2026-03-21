@@ -1,25 +1,25 @@
 # Online Graph Coloring Analysis
 
-An interview-ready full-stack project for exploring online graph coloring strategies on randomly generated k-partite graphs.
+Online Graph Coloring Analysis is a full-stack application for running and comparing online graph coloring experiments on randomly generated k-partite graphs.
 
-The project combines:
+The repository includes:
 
-- a Flask API for experiment orchestration
-- a Vue dashboard for running and visualizing experiments
-- reproducible benchmark scenarios
-- automated tests and validation
+- a Flask API for experiment execution and result delivery
+- a Vue dashboard for configuring runs and reviewing output
+- benchmark scenarios for repeatable comparisons
+- automated tests for core backend behavior
 
-## Why This Project Matters
+## Overview
 
-Graph coloring is a classic algorithmic problem with practical links to scheduling, compiler register allocation, and resource assignment. This repository focuses on the online version of the problem, where vertices are colored as they are revealed rather than with full future knowledge.
+Graph coloring assigns labels to vertices such that adjacent vertices do not share the same color. This project focuses on the online setting, where coloring decisions are made as vertices are revealed.
 
-That makes the project useful for interview discussion because it naturally touches:
+The application supports:
 
-- algorithm design and trade-offs
-- API design and input validation
-- reproducibility in simulation-heavy systems
-- frontend/backend contracts
-- repository hygiene and testing
+- random k-partite graph generation
+- multiple coloring strategies, including First Fit and CBIP
+- per-run metrics for colors used, ratio to target chromatic number, and runtime
+- rendered sample graphs for visual inspection
+- reproducible runs through fixed seeds
 
 ## Architecture
 
@@ -27,48 +27,47 @@ That makes the project useful for interview discussion because it naturally touc
 
 `backend/graph_coloring/`
 
-- `api.py`: Flask app factory and API routes
-- `validation.py`: request parsing and business rules
+- `api.py`: Flask app factory and route definitions
+- `validation.py`: request parsing and domain constraints
 - `generator.py`: k-partite graph generation
 - `algorithms.py`: First Fit and CBIP implementations
-- `experiment.py`: experiment orchestration and metrics
+- `experiment.py`: experiment execution and metric aggregation
 - `visualization.py`: graph rendering
-- `models.py`: typed experiment result objects
+- `models.py`: experiment result models
 
 ### Frontend
 
 `frontend/src/`
 
-- `components/LandingPage.vue`: project overview and interview framing
-- `components/GraphColoring.vue`: experiment workbench and result presentation
-- `config.js`: API base URL configuration
-- `assets/styles.css`: application styling system
+- `components/LandingPage.vue`: product overview
+- `components/GraphColoring.vue`: experiment workbench
+- `config.js`: API configuration
+- `assets/styles.css`: application styles
 
 ## Results Snapshot
 
-Results below were generated on March 20, 2026 with:
+The benchmark table below was generated on March 20, 2026 using:
 
 - fixed seed `42`
-- `20` experiment instances per scenario
-- the built-in benchmark script: `python backend/benchmark.py`
+- `20` instances per scenario
+- `python backend/benchmark.py`
 
-| Scenario                      | Avg colors | Avg ratio | Avg runtime (ms) | Best ratio | Worst ratio |
-| ----------------------------- | ---------: | --------: | ---------------: | ---------: | ----------: |
-| CBIP on bipartite graphs      |        3.1 |      1.55 |           1.2904 |        1.0 |         2.0 |
-| First Fit on bipartite graphs |       3.35 |     1.675 |           0.0611 |        1.0 |         3.0 |
-| First Fit on 3-partite graphs |       5.25 |      1.75 |           0.0293 |     1.3333 |         2.0 |
-| First Fit on 4-partite graphs |        6.7 |     1.675 |           0.0355 |        1.5 |         2.0 |
+| Scenario | Avg colors | Avg ratio | Avg runtime (ms) | Best ratio | Worst ratio |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| CBIP on bipartite graphs | 3.1 | 1.55 | 1.2904 | 1.0 | 2.0 |
+| First Fit on bipartite graphs | 3.35 | 1.675 | 0.0611 | 1.0 | 3.0 |
+| First Fit on 3-partite graphs | 5.25 | 1.75 | 0.0293 | 1.3333 | 2.0 |
+| First Fit on 4-partite graphs | 6.7 | 1.675 | 0.0355 | 1.5 | 2.0 |
 
-### Findings From The Results
+Key observations:
 
 - CBIP used fewer colors than First Fit on the same bipartite benchmark.
-- First Fit was materially faster, which is expected from its simpler greedy rule.
-- As the target chromatic number increased, First Fit stayed fast but consistently overshot the target coloring number.
-- The project now makes those trade-offs visible and reproducible instead of anecdotal.
+- First Fit remained substantially faster because of its simpler greedy rule.
+- On higher-partite graph families, First Fit stayed fast but continued to exceed the target chromatic number.
 
 ## Verification
 
-The following checks were run successfully during cleanup:
+The following checks were executed successfully:
 
 - `python -m pytest backend/tests -q`
 - `npm run lint`
@@ -81,14 +80,14 @@ Backend test result:
 
 ## Local Setup
 
-### 1. Create a Python environment
+### Python environment
 
 ```powershell
 python -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -r requirements-dev.txt
 ```
 
-### 2. Install frontend dependencies
+### Frontend dependencies
 
 ```powershell
 cd frontend
@@ -96,23 +95,23 @@ npm install
 cd ..
 ```
 
-### 3. Start the backend
+### Start the backend
 
 ```powershell
 .\.venv\Scripts\python.exe backend/app.py
 ```
 
-The API will start on `http://localhost:5000`.
+The API is available at `http://localhost:5000`.
 
-### 4. Start the frontend
+### Start the frontend
 
-Create a local environment file if you want to override the default backend URL:
+Optional local environment file:
 
 ```powershell
 Copy-Item frontend\.env.example frontend\.env.local
 ```
 
-Then run:
+Run the frontend:
 
 ```powershell
 cd frontend
@@ -120,15 +119,13 @@ npm run serve
 cd ..
 ```
 
-The frontend development server runs on `http://localhost:8080`.
+The web application is available at `http://localhost:8080`.
 
 ## API
 
 ### Health Check
 
 `GET /api/health`
-
-Response:
 
 ```json
 {
@@ -211,8 +208,8 @@ Response shape:
 `-- README.md
 ```
 
-## Conclusion
+## Notes
 
-The project now reads like an engineering project instead of a classroom prototype. It is suitable for portfolio use and for technical discussion around algorithms, system design decisions, validation, benchmarking, and software quality.
-
-The best next improvement would be migrating the frontend from the older Vue CLI stack to Vite. The production dependency surface is clean, but a Vite migration would modernize the developer tooling and remove the remaining aging build-chain baggage from the interview story.
+- The API validates domain-specific constraints, including restricting CBIP requests to bipartite graph families.
+- Production frontend dependencies were updated so `npm audit --omit=dev` reports zero vulnerabilities as of March 20, 2026.
+- A future migration from Vue CLI to Vite would modernize the frontend toolchain further.
