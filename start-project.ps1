@@ -28,7 +28,7 @@ Write-Host "Starting frontend in a new PowerShell window..." -ForegroundColor Cy
 Start-Process powershell -ArgumentList @(
     "-NoExit",
     "-Command",
-    "Set-Location '$frontendPath'; npm run serve"
+    "Set-Location '$frontendPath'; npm run dev"
 )
 
 Set-Location $projectRoot

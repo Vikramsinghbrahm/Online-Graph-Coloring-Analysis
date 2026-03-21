@@ -5,7 +5,7 @@ Online Graph Coloring Analysis is a full-stack application for running and compa
 The repository includes:
 
 - a Flask API for experiment execution and result delivery
-- a Vue dashboard for configuring runs and reviewing output
+- a Vue + Vite dashboard for configuring runs and reviewing output
 - benchmark scenarios for repeatable comparisons
 - automated tests for core backend behavior
 
@@ -44,6 +44,11 @@ The application supports:
 - `config.js`: API configuration
 - `assets/styles.css`: application styles
 
+Build tooling:
+
+- Vite for development and production builds
+- ESLint for frontend linting
+
 ## Results Snapshot
 
 The benchmark table below was generated on March 20, 2026 using:
@@ -52,12 +57,12 @@ The benchmark table below was generated on March 20, 2026 using:
 - `20` instances per scenario
 - `python backend/benchmark.py`
 
-| Scenario | Avg colors | Avg ratio | Avg runtime (ms) | Best ratio | Worst ratio |
-| --- | ---: | ---: | ---: | ---: | ---: |
-| CBIP on bipartite graphs | 3.1 | 1.55 | 1.2904 | 1.0 | 2.0 |
-| First Fit on bipartite graphs | 3.35 | 1.675 | 0.0611 | 1.0 | 3.0 |
-| First Fit on 3-partite graphs | 5.25 | 1.75 | 0.0293 | 1.3333 | 2.0 |
-| First Fit on 4-partite graphs | 6.7 | 1.675 | 0.0355 | 1.5 | 2.0 |
+| Scenario                      | Avg colors | Avg ratio | Avg runtime (ms) | Best ratio | Worst ratio |
+| ----------------------------- | ---------: | --------: | ---------------: | ---------: | ----------: |
+| CBIP on bipartite graphs      |        3.1 |      1.55 |           1.2904 |        1.0 |         2.0 |
+| First Fit on bipartite graphs |       3.35 |     1.675 |           0.0611 |        1.0 |         3.0 |
+| First Fit on 3-partite graphs |       5.25 |      1.75 |           0.0293 |     1.3333 |         2.0 |
+| First Fit on 4-partite graphs |        6.7 |     1.675 |           0.0355 |        1.5 |         2.0 |
 
 Key observations:
 
@@ -115,7 +120,7 @@ Run the frontend:
 
 ```powershell
 cd frontend
-npm run serve
+npm run dev
 cd ..
 ```
 
@@ -207,9 +212,3 @@ Response shape:
 |-- requirements-dev.txt
 `-- README.md
 ```
-
-## Notes
-
-- The API validates domain-specific constraints, including restricting CBIP requests to bipartite graph families.
-- Production frontend dependencies were updated so `npm audit --omit=dev` reports zero vulnerabilities as of March 20, 2026.
-- A future migration from Vue CLI to Vite would modernize the frontend toolchain further.
