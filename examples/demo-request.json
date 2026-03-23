@@ -1,0 +1,8 @@
+{
+  "chromaticNumber": 3,
+  "numberOfVertices": 24,
+  "numberOfInstances": 8,
+  "coloringMethod": "first_fit",
+  "edgeProbability": 0.35,
+  "seed": 42
+}

@@ -3,6 +3,8 @@ $ErrorActionPreference = "Stop"
 $projectRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
 $frontendPath = Join-Path $projectRoot "frontend"
 $venvPython = Join-Path $projectRoot ".venv\Scripts\python.exe"
+$backendEnvExample = Join-Path $projectRoot ".env.example"
+$backendEnvLocal = Join-Path $projectRoot ".env"
 $frontendEnvExample = Join-Path $frontendPath ".env.example"
 $frontendEnvLocal = Join-Path $frontendPath ".env.local"
 
@@ -11,6 +13,10 @@ Set-Location $projectRoot
 if (-not (Test-Path $venvPython)) {
     Write-Host "Creating Python virtual environment..." -ForegroundColor Cyan
     python -m venv .venv
+}
+
+if (-not (Test-Path $backendEnvLocal) -and (Test-Path $backendEnvExample)) {
+    Copy-Item $backendEnvExample $backendEnvLocal
 }
 
 Write-Host "Installing Python dependencies..." -ForegroundColor Cyan

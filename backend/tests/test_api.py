@@ -19,7 +19,8 @@ def test_healthcheck_returns_ok(client):
     response = client.get("/api/health")
 
     assert response.status_code == 200
-    assert response.get_json() == {"status": "ok"}
+    assert response.get_json()["status"] == "ok"
+    assert "X-Request-ID" in response.headers
 
 
 def test_experiment_returns_structured_response(client):
@@ -59,3 +60,26 @@ def test_cbip_validation_rejects_non_bipartite_requests(client):
 
     assert response.status_code == 400
     assert "bipartite" in payload["error"].lower()
+
+
+def test_metrics_endpoint_tracks_requests_and_experiments(client):
+    client.get("/api/health")
+    client.post(
+        "/api/experiments",
+        json={
+            "chromaticNumber": 3,
+            "numberOfVertices": 15,
+            "numberOfInstances": 2,
+            "coloringMethod": "first_fit",
+            "edgeProbability": 0.35,
+            "seed": 17,
+        },
+    )
+
+    response = client.get("/api/metrics")
+    payload = response.get_json()
+
+    assert response.status_code == 200
+    assert payload["requests"]["total"] >= 2
+    assert payload["experiments"]["total"] == 1
+    assert payload["experiments"]["byMethod"]["first_fit"] == 1
